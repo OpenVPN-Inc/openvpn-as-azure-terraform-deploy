@@ -1,0 +1,30 @@
+# Copy this file to terraform.tfvars and replace the values.
+# terraform.tfvars is ignored by git. Do not commit real values.
+
+# subscription_id   = "00000000-0000-0000-0000-000000000000"  # or set ARM_SUBSCRIPTION_ID
+location          = "eastus"
+vm_size           = "Standard_D2als_v7" # x64 only. This size is not available in every region
+ssh_allowed_cidrs = ["11.22.33.44/32"]  # Restrict SSH to your trusted IP addresses
+
+# Source ranges for the other ports (default: open to the internet)
+# admin_ui_allowed_cidrs = ["11.22.33.44/32"]  # TCP 943, Admin Web UI
+# https_allowed_cidrs    = ["0.0.0.0/0"]       # TCP 443
+# vpn_allowed_cidrs      = ["0.0.0.0/0"]       # UDP 1194
+
+# SSH key: you must set exactly one of the three options below (remove the # on one line)
+# 1. Generate a key pair. Get the private key with: terraform output -raw ssh_private_key > key.pem
+# generate_ssh_key = true
+# 2. Use your own public key
+# ssh_public_key = "ssh-rsa AAAA... user@host"
+# 3. Use an SSH public key that already exists in Azure
+# existing_ssh_key_name                = "my-ssh-key"
+# existing_ssh_key_resource_group_name = "my-existing-rg"  # default: the resource group of this deployment
+
+# Use an existing subnet instead of creating a new network (optional)
+# subnet_id             = "/subscriptions/<id>/resourceGroups/<rg>/providers/Microsoft.Network/virtualNetworks/<vnet>/subnets/<subnet>"
+# create_resource_group = false
+# resource_group_name   = "my-existing-rg"  # default: <name_prefix>-rg
+
+admin_username = "openvpn" # Access Server admin user, not the SSH user (see vm_admin_username)
+# admin_password = "<at least 12 characters>"  # If not set, a random password is generated. Show it with: terraform output -json openvpnas_user
+# activation_key = "SUBSCR-..."                # If not set, no license line is added

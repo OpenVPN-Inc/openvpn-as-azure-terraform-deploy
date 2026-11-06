@@ -31,6 +31,11 @@ override.tf.json
 
 # Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
 # example: *tfplan*
+*tfplan*
+
+# Ignore private keys, for example a key saved from: terraform output -raw ssh_private_key > key.pem
+*.pem
+*.key
 
 # Ignore CLI configuration files
 .terraformrc
