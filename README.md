@@ -10,6 +10,37 @@ This Terraform project automates the deployment of an **OpenVPN Access Server**.
 - An SSH key. You can use your own public key, use a key that already exists in Azure, or let Terraform generate one.
 - The Azure subscription ID, set in `subscription_id` or in the `ARM_SUBSCRIPTION_ID` environment variable.
 
+## Authentication
+
+The `azurerm` provider supports several ways to sign in to Azure. This project does not set any credentials in the code. Choose the method with environment variables. The provider checks them before it uses the Azure CLI login.
+
+| Method | When to use | Settings |
+|--------|-------------|----------|
+| Azure CLI | Local work (default) | Run `az login`. No other setting is needed. |
+| Managed identity | Terraform runs on an Azure resource that has an identity | `ARM_USE_MSI=true`. For a user-assigned identity, also set `ARM_CLIENT_ID`. |
+| OIDC (workload identity federation) | CI/CD, for example GitHub Actions or Azure DevOps | `ARM_USE_OIDC=true`, `ARM_CLIENT_ID`, `ARM_TENANT_ID` |
+| Service principal with client secret | No other method is possible | `ARM_CLIENT_ID`, `ARM_CLIENT_SECRET`, `ARM_TENANT_ID` |
+| Service principal with client certificate | You do not want to use a secret | `ARM_CLIENT_ID`, `ARM_CLIENT_CERTIFICATE_PATH`, `ARM_CLIENT_CERTIFICATE_PASSWORD`, `ARM_TENANT_ID` |
+
+For all methods, set the subscription with `subscription_id` or `ARM_SUBSCRIPTION_ID`.
+
+Example with a service principal:
+
+```bash
+export ARM_SUBSCRIPTION_ID="<subscription-id>"
+export ARM_TENANT_ID="<tenant-id>"
+export ARM_CLIENT_ID="<client-id>"
+export ARM_CLIENT_SECRET="<client-secret>"
+terraform plan
+```
+
+Notes:
+
+- If `ARM_CLIENT_ID` or other `ARM_*` variables are set, they take priority over the Azure CLI login.
+- Use environment variables for secrets. Never put them in `.tf` or `terraform.tfvars` files, and never commit them to git.
+- Prefer OIDC or managed identity to a client secret. They use short-lived tokens, so there is no secret to store.
+- The identity needs enough rights (for example the `Contributor` role) on the subscription or resource group.
+
 ## Quick Start
 
 ```bash
